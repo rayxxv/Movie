@@ -14,4 +14,7 @@
     <string name="remember_me">Remember me</string>
     <string name="movie_title">Movie Title</string>
     <string name="genre">Genre</string>
+    <string name="overview">Overview</string>
+    <string name="todo">TODO</string>
+
 </resources>

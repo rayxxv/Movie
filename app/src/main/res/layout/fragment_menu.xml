@@ -4,12 +4,14 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:background="@drawable/mockup2"
+    android:background="@color/black"
     tools:context=".fragment.MenuFragment">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:background="@drawable/mockup2"
+        >
 
         <ProgressBar
             android:id="@+id/progressBar"
@@ -54,16 +56,19 @@
             app:layout_constraintEnd_toEndOf="parent"
             android:orientation="horizontal"
             android:layout_marginHorizontal="16dp"/>
+
         <TextView
             android:id="@+id/tv_popular_series"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_margin="16sp"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
             android:text="Popular TV Series"
             android:textColor="@color/white"
             android:textSize="16sp"
-            app:layout_constraintTop_toBottomOf="@id/rv_popular_movie"
             app:layout_constraintStart_toStartOf="parent"
-            android:layout_margin="16sp"/>
+            app:layout_constraintTop_toBottomOf="@id/rv_popular_movie" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rv_popular_series"

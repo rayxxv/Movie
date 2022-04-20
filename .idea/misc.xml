@@ -3,14 +3,23 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/Binar/Movie/app/src/main/res/drawable-v24/ic_arrow_back.xml" value="0.2275" />
+        <entry key="..\:/Binar/Movie/app/src/main/res/drawable-v24/ic_baseline_calendar_today_24.xml" value="0.2275" />
+        <entry key="..\:/Binar/Movie/app/src/main/res/drawable-v24/ic_baseline_people_24.xml" value="0.2275" />
+        <entry key="..\:/Binar/Movie/app/src/main/res/drawable-v24/ic_launcher_foreground.xml" value="0.2275" />
+        <entry key="..\:/Binar/Movie/app/src/main/res/drawable-v24/riple_background.xml" value="0.2275" />
+        <entry key="..\:/Binar/Movie/app/src/main/res/drawable/ic_baseline_arrow_back_24.xml" value="0.2275" />
+        <entry key="..\:/Binar/Movie/app/src/main/res/drawable/ic_movie.xml" value="0.2275" />
         <entry key="..\:/Binar/Movie/app/src/main/res/layout/activity_main.xml" value="0.2328125" />
-        <entry key="..\:/Binar/Movie/app/src/main/res/layout/fragment_login.xml" value="0.1" />
+        <entry key="..\:/Binar/Movie/app/src/main/res/layout/fragment_detail.xml" value="0.4" />
+        <entry key="..\:/Binar/Movie/app/src/main/res/layout/fragment_login.xml" value="0.152" />
         <entry key="..\:/Binar/Movie/app/src/main/res/layout/fragment_login2.xml" value="0.2328125" />
         <entry key="..\:/Binar/Movie/app/src/main/res/layout/fragment_menu.xml" value="0.2328125" />
         <entry key="..\:/Binar/Movie/app/src/main/res/layout/fragment_register.xml" value="0.2328125" />
         <entry key="..\:/Binar/Movie/app/src/main/res/layout/fragment_register2.xml" value="0.2328125" />
         <entry key="..\:/Binar/Movie/app/src/main/res/layout/fragment_splash_screen.xml" value="0.20819112627986347" />
         <entry key="..\:/Binar/Movie/app/src/main/res/layout/item_content.xml" value="0.2328125" />
+        <entry key="..\:/Binar/Movie/app/src/main/res/layout/item_movie.xml" value="0.2328125" />
         <entry key="..\:/Binar/Movie/app/src/main/res/layout/item_tv_series.xml" value="0.2328125" />
       </map>
     </option>

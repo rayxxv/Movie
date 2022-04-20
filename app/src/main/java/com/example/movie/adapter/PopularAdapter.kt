@@ -5,6 +5,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.example.movie.databinding.ItemMovieBinding
 import com.example.movie.model.Result
 import com.squareup.picasso.Picasso
@@ -45,7 +46,7 @@ class PopularAdapter(private val onItemClick: OnClickListener):
         RecyclerView.ViewHolder(binding.root) {
         fun bind(data: Result) {
             binding.apply {
-                Picasso.get().load(IMAGE_BASE + data.posterPath).fit().into(ivMovie)
+                Glide.with(binding.root).load(IMAGE_BASE + data.posterPath).fitCenter().into(ivMovie)
                 tvMovieTitle.text = data.originalTitle
                 tvMovieRating.text = data.voteAverage.toString()
                 root.setOnClickListener {

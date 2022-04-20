@@ -5,6 +5,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.example.movie.databinding.ItemTvSeriesBinding
 import com.example.movie.model.ResultX
 import com.squareup.picasso.Picasso
@@ -45,7 +46,7 @@ class TvAdapter(private val onItemClick: OnClickListener):
         RecyclerView.ViewHolder(binding.root) {
         fun bind(data: ResultX) {
             binding.apply {
-                Picasso.get().load(IMAGE_BASE + data.posterPath).fit().into(ivSeries)
+                Glide.with(binding.root).load(IMAGE_BASE + data.posterPath).fitCenter().into(ivSeries)
                 tvSeriesTitle.text = data.name
                 tvSeriesRating.text = data.voteAverage.toString()
                 root.setOnClickListener {
