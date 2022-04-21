@@ -1,4 +1,4 @@
-package com.example.notebelanja.room
+package com.example.movie.room
 
 import android.os.Parcelable
 import androidx.room.ColumnInfo

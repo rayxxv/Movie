@@ -2,11 +2,13 @@ package com.example.movie.adapter
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.navigation.findNavController
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.movie.databinding.ItemMovieBinding
+import com.example.movie.fragment.MenuFragmentDirections
 import com.example.movie.model.Result
 import com.squareup.picasso.Picasso
 
@@ -50,7 +52,8 @@ class PopularAdapter(private val onItemClick: OnClickListener):
                 tvMovieTitle.text = data.originalTitle
                 tvMovieRating.text = data.voteAverage.toString()
                 root.setOnClickListener {
-                    onItemClick.onClickItem(data)
+                    val id = MenuFragmentDirections.actionMenuFragmentToDetailFragment(data.id!!)
+                    it.findNavController().navigate(id)
                 }
             }
         }

@@ -25,7 +25,7 @@ data class Result(
     @SerializedName("release_date")
     val releaseDate: String,
     @SerializedName("title")
-    val title: String,
+    val name: String,
     @SerializedName("video")
     val video: Boolean,
     @SerializedName("vote_average")

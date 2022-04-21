@@ -5,36 +5,39 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.fragment.app.viewModels
+import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.findNavController
 import androidx.navigation.fragment.navArgs
 import com.bumptech.glide.Glide
 import com.example.movie.R
-import com.example.movie.databinding.FragmentDetailBinding
-import com.example.movie.viewmodel.DetailViewModel
+import com.example.movie.databinding.FragmentDetailMovieBinding
+import com.example.movie.viewmodel.DetailMovieViewModel
+import com.example.movie.viewmodel.DetailSeriesViewModel
 
 
-class DetailFragment : Fragment() {
-    private var _binding: FragmentDetailBinding? = null
+class DetailMovieFragment : Fragment() {
+    private var _binding: FragmentDetailMovieBinding? = null
     private val binding get() = _binding!!
-
-    private val viewModel by viewModels<DetailViewModel>()
+    private val IMAGE_BASE = "https://image.tmdb.org/t/p/w500/"
+    private lateinit var viewModel: DetailMovieViewModel
+    private val args: DetailMovieFragmentArgs by navArgs()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _binding = FragmentDetailBinding.inflate(layoutInflater)
+        _binding = FragmentDetailMovieBinding.inflate(layoutInflater)
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+
         super.onViewCreated(view, savedInstanceState)
-        viewModel.getDetail(args.movieId)
+        viewModel = ViewModelProvider(this).get(DetailMovieViewModel::class.java)
 
         binding.ivBack.setOnClickListener {
             it.findNavController().popBackStack()
         }
-
         viewModel.loading.observe(viewLifecycleOwner){
             if (it){
                 binding.loadingContainer.visibility = View.VISIBLE
@@ -43,21 +46,23 @@ class DetailFragment : Fragment() {
             }
         }
 
+        val movieId = args.movieId
 
-        viewModel.detail.observe(viewLifecycleOwner) { it ->
+        viewModel.detailMovie.observe(viewLifecycleOwner) {
 
             Glide.with(binding.ivBackdrop)
-                .load(urlImage + it?.backdropPath)
+                .load(IMAGE_BASE + it?.backdropPath)
                 .error(R.drawable.ic_broken)
                 .into(binding.ivBackdrop)
 
             Glide.with(binding.ivPoster)
-                .load(urlImage + it?.posterPath)
+                .load(IMAGE_BASE + it?.posterPath)
                 .error(R.drawable.ic_broken)
                 .into(binding.ivPoster)
 
             binding.apply {
-                tvTitle.text = it?.title
+                tvJudul.text = it?.name
+                tvTitle.text = it?.name
                 tvVoteCount.text = it?.voteCount.toString()
                 tvOverview.text = it?.overview
                 it?.voteAverage.let {
@@ -65,17 +70,17 @@ class DetailFragment : Fragment() {
                         rbRating.rating = (it / 2).toFloat()
                     }
                 }
-
-                if (it?.releaseDate != null && it.releaseDate.isNotBlank()){
-                    tvReleaseDate.text = it.releaseDate
+                if (it?.releaseDate != null && it?.releaseDate.isNotBlank()){
+                    tvReleaseDate.text = it?.releaseDate
                 }else{
                     tvReleaseDate.visibility = View.GONE
                 }
             }
-
         }
-
+        viewModel.getDetailMovies(movieId)
     }
+
+
 
     override fun onDestroyView() {
         super.onDestroyView()

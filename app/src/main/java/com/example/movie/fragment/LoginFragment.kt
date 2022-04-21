@@ -55,12 +55,6 @@ class LoginFragment : Fragment() {
 
         binding.btnMasuk.setOnClickListener {
             GlobalScope.async {
-                if (binding.cbRemember.isChecked){
-                    val editorSp : SharedPreferences.Editor = loginscreen!!.edit()
-                    editorSp.putString(USERNAME,binding.etUsername.text.toString())
-                    editorSp.putString(PASSWORD,binding.etPassword.text.toString())
-                    editorSp.apply()
-                }
                 val flags = mDB?.userDao()?.login(binding.etUsername.text.toString(), binding.etPassword.text.toString())
                 activity?.runOnUiThread {
                     if (flags == true) {

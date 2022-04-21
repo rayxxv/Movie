@@ -1,9 +1,6 @@
-package com.example.notebelanja.room
+package com.example.movie.room
 
-import androidx.room.Dao
-import androidx.room.Insert
-import androidx.room.OnConflictStrategy
-import androidx.room.Query
+import androidx.room.*
 
 @Dao
 interface UserDao {
@@ -12,4 +9,7 @@ interface UserDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun addUser(user: User): Long
+
+    @Update
+    fun updateItem(user: User):Int
 }

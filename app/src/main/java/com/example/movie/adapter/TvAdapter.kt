@@ -2,11 +2,13 @@ package com.example.movie.adapter
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.navigation.findNavController
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.movie.databinding.ItemTvSeriesBinding
+import com.example.movie.fragment.MenuFragmentDirections
 import com.example.movie.model.ResultX
 import com.squareup.picasso.Picasso
 
@@ -16,7 +18,7 @@ class TvAdapter(private val onItemClick: OnClickListener):
         override fun areItemsTheSame(
             oldItem: ResultX,
             newItem: ResultX
-        ): Boolean = oldItem.id == newItem.id
+        ): Boolean = oldItem.number == newItem.number
 
         override fun areContentsTheSame(
             oldItem: ResultX,
@@ -50,7 +52,8 @@ class TvAdapter(private val onItemClick: OnClickListener):
                 tvSeriesTitle.text = data.name
                 tvSeriesRating.text = data.voteAverage.toString()
                 root.setOnClickListener {
-                    onItemClick.onClickItem(data)
+                    val id = MenuFragmentDirections.actionMenuFragmentToDetailSeriesFragment(data.number!!)
+                    it.findNavController().navigate(id)
                 }
             }
         }

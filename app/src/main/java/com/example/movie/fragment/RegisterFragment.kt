@@ -7,10 +7,10 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
-import com.example.movie.databinding.FragmentRegisterBinding
-import com.example.movie.room.UserDatabase
 import com.example.movie.R
-import com.example.notebelanja.room.User
+import com.example.movie.databinding.FragmentRegisterBinding
+import com.example.movie.room.User
+import com.example.movie.room.UserDatabase
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
 
@@ -23,8 +23,6 @@ class RegisterFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     )
-
-
             : View {
         _binding = FragmentRegisterBinding.inflate(layoutInflater, container, false)
         return binding.root

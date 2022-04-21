@@ -1,29 +1,38 @@
 package com.example.movie.fragment
 
+import android.content.Context
+import android.content.SharedPreferences
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.lifecycle.ViewModelProvider
+import android.widget.Toast
+import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
+import com.example.movie.R
 import com.example.movie.adapter.PopularAdapter
 import com.example.movie.adapter.TvAdapter
 import com.example.movie.databinding.FragmentMenuBinding
 import com.example.movie.model.Popular
+import com.example.movie.model.Result
+import com.example.movie.model.ResultX
+import com.example.movie.model.Tv
+import com.example.movie.room.UserDatabase
 import com.example.movie.service.ApiClient
 import com.example.movie.viewmodel.MenuViewModel
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-import com.example.movie.model.Result
-import com.example.movie.model.ResultX
-import com.example.movie.model.Tv
 
 
 class MenuFragment : Fragment() {
     private var _binding: FragmentMenuBinding? = null
     private val binding get() = _binding!!
-    private lateinit var viewModel: MenuViewModel
+    var myDb : UserDatabase? = null
+    private val args : MenuFragmentArgs by navArgs()
+    private lateinit var MenuViewModel: MenuViewModel
+    private lateinit var preferences: SharedPreferences
 
 
     override fun onCreateView(
@@ -40,23 +49,21 @@ class MenuFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        viewModel = ViewModelProvider(this).get(MenuViewModel::class.java)
-
+        preferences = requireContext().getSharedPreferences(LoginFragment.AKUN, Context.MODE_PRIVATE)
+        binding.tvJudul.text = "Welcome ${preferences.getString(LoginFragment.USERNAME,null)}"
+        binding.btnProfile.setOnClickListener{
+            findNavController().navigate(R.id.action_menuFragment_to_profileFragment)
+        }
         fetchAllDataMovie()
         fetchAllDataSeries()
 
-        viewModel.username.observe(viewLifecycleOwner,{
-            binding.tvUser.text = it
-        })
     }
+
 
     private fun fetchAllDataMovie(){
         ApiClient.instance.getAllMovie()
             .enqueue(object : Callback<Popular> {
-                override fun onResponse(
-                    call: Call<Popular>,
-                    response: Response<Popular>
+                override fun onResponse(call: Call<Popular>, response: Response<Popular>
                 ){
                     val body = response.body()
                     val code = response.code()
@@ -105,7 +112,7 @@ class MenuFragment : Fragment() {
     private fun showListSeries(data: List<ResultX>?){
         val adapter = TvAdapter(object : TvAdapter.OnClickListener{
             override fun onClickItem(data: ResultX) {
-                val id = data.id
+                val id = data.number
             }
         })
         adapter.submitData(data)
