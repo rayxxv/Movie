@@ -6,10 +6,11 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
-import androidx.navigation.fragment.navArgs
 import com.example.movie.R
 import com.example.movie.adapter.PopularAdapter
 import com.example.movie.adapter.TvAdapter
@@ -18,9 +19,13 @@ import com.example.movie.model.Popular
 import com.example.movie.model.Result
 import com.example.movie.model.ResultX
 import com.example.movie.model.Tv
+import com.example.movie.room.User
 import com.example.movie.room.UserDatabase
 import com.example.movie.service.ApiClient
-import com.example.movie.viewmodel.MenuViewModel
+import com.example.movie.viewmodel.HomeViewModel
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -29,11 +34,9 @@ import retrofit2.Response
 class MenuFragment : Fragment() {
     private var _binding: FragmentMenuBinding? = null
     private val binding get() = _binding!!
-    var myDb : UserDatabase? = null
-    private val args : MenuFragmentArgs by navArgs()
-    private lateinit var MenuViewModel: MenuViewModel
     private lateinit var preferences: SharedPreferences
-
+    private var myDB: UserDatabase?= null
+    private lateinit var viewModel: HomeViewModel
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -49,17 +52,41 @@ class MenuFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        preferences = requireContext().getSharedPreferences(LoginFragment.AKUN, Context.MODE_PRIVATE)
+        preferences = requireActivity().getSharedPreferences("sharedPreferences", Context.MODE_PRIVATE)
         binding.tvJudul.text = "Welcome ${preferences.getString(LoginFragment.USERNAME,null)}"
-        binding.btnProfile.setOnClickListener{
-            findNavController().navigate(R.id.action_menuFragment_to_profileFragment)
-        }
+        viewModel = ViewModelProvider(this).get(HomeViewModel::class.java)
+
+        getUser()
         fetchAllDataMovie()
         fetchAllDataSeries()
 
+        binding.btnProfile.setOnClickListener{
+            findNavController().navigate(R.id.action_menuFragment_to_profileFragment)
+        }
+        viewModel.user.observe(viewLifecycleOwner, Observer {
+            binding.tvJudul.text = it.username
+        })
     }
+    private fun getUser() {
+        myDB = UserDatabase.getInstance(requireContext())
+        preferences = requireContext().getSharedPreferences("sharedPreferences", Context.MODE_PRIVATE)
+        val username = preferences.getString("username", null)
+        val password = preferences.getString("password", null)
 
-
+        lifecycleScope.launch(Dispatchers.IO) {
+            val user = myDB?.userDao()?.getUser(username.toString(), password.toString())
+            runBlocking(Dispatchers.Main) {
+                if (user != null) {
+                    val data = User(user.id, user.username, user.email, user.password)
+                    viewModel.getDataUser(data)
+                    binding.btnProfile.setOnClickListener {
+                        val direct = MenuFragmentDirections.actionMenuFragmentToProfileFragment(data)
+                        findNavController().navigate(direct)
+                    }
+                }
+            }
+        }
+    }
     private fun fetchAllDataMovie(){
         ApiClient.instance.getAllMovie()
             .enqueue(object : Callback<Popular> {
@@ -86,7 +113,6 @@ class MenuFragment : Fragment() {
         adapter.submitData(data)
         binding.rvPopularMovie.adapter = adapter
     }
-
     private fun fetchAllDataSeries(){
         ApiClient.instance.getAllSeries()
             .enqueue(object : Callback<Tv> {
@@ -118,11 +144,11 @@ class MenuFragment : Fragment() {
         adapter.submitData(data)
         binding.rvPopularSeries.adapter = adapter
     }
-
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
     }
+
 
 
 

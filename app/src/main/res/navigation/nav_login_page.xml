@@ -39,12 +39,9 @@
         <action
             android:id="@+id/action_menuFragment_to_profileFragment"
             app:destination="@id/profileFragment" />
-        <argument
-            android:name="username"
-            app:argType="string" />
-        <argument
-            android:name="password"
-            app:argType="string" />
+        <action
+            android:id="@+id/action_menuFragment_to_loginFragment"
+            app:destination="@id/loginFragment" />
     </fragment>
     <fragment
         android:id="@+id/detailFragment"
@@ -80,5 +77,13 @@
         <action
             android:id="@+id/action_profileFragment_to_loginFragment"
             app:destination="@id/loginFragment" />
+        <action
+            android:id="@+id/action_profileFragment_to_menuFragment2"
+            app:destination="@id/menuFragment" />
+        <argument
+            android:name="user"
+            app:argType="com.example.movie.room.User"
+            app:nullable="true"
+            android:defaultValue="@null" />
     </fragment>
 </navigation>
