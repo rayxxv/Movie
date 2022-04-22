@@ -1,5 +1,6 @@
 package com.example.movie.fragment
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.SharedPreferences
 import android.os.Bundle
@@ -7,7 +8,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
@@ -23,9 +23,7 @@ import com.example.movie.room.User
 import com.example.movie.room.UserDatabase
 import com.example.movie.service.ApiClient
 import com.example.movie.viewmodel.HomeViewModel
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.*
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -41,19 +39,16 @@ class MenuFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         _binding = FragmentMenuBinding.inflate(inflater, container, false)
         return binding.root
     }
 
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
-    }
 
+    @SuppressLint("SetTextI18n")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         preferences = requireActivity().getSharedPreferences("sharedPreferences", Context.MODE_PRIVATE)
-        binding.tvJudul.text = "Welcome ${preferences.getString(LoginFragment.USERNAME,null)}"
         viewModel = ViewModelProvider(this).get(HomeViewModel::class.java)
 
         getUser()
@@ -63,18 +58,18 @@ class MenuFragment : Fragment() {
         binding.btnProfile.setOnClickListener{
             findNavController().navigate(R.id.action_menuFragment_to_profileFragment)
         }
-        viewModel.user.observe(viewLifecycleOwner, Observer {
-            binding.tvJudul.text = it.username
-        })
+        viewModel.user.observe(viewLifecycleOwner) {
+            binding.tvJudul.text = "Hallo ${it.username}"
+        }
     }
     private fun getUser() {
         myDB = UserDatabase.getInstance(requireContext())
         preferences = requireContext().getSharedPreferences("sharedPreferences", Context.MODE_PRIVATE)
         val username = preferences.getString("username", null)
-        val password = preferences.getString("password", null)
 
-        lifecycleScope.launch(Dispatchers.IO) {
-            val user = myDB?.userDao()?.getUser(username.toString(), password.toString())
+
+        GlobalScope.async {
+            val user = myDB?.userDao()?.getUser(username.toString())
             runBlocking(Dispatchers.Main) {
                 if (user != null) {
                     val data = User(user.id, user.username, user.email, user.password)
@@ -105,11 +100,7 @@ class MenuFragment : Fragment() {
             })
     }
     private fun showListMovie(data: List<Result>?){
-        val adapter = PopularAdapter(object : PopularAdapter.OnClickListener{
-            override fun onClickItem(data: Result) {
-                val id = data.id
-            }
-        })
+        val adapter = PopularAdapter()
         adapter.submitData(data)
         binding.rvPopularMovie.adapter = adapter
     }
@@ -136,11 +127,7 @@ class MenuFragment : Fragment() {
     }
 
     private fun showListSeries(data: List<ResultX>?){
-        val adapter = TvAdapter(object : TvAdapter.OnClickListener{
-            override fun onClickItem(data: ResultX) {
-                val id = data.number
-            }
-        })
+        val adapter = TvAdapter()
         adapter.submitData(data)
         binding.rvPopularSeries.adapter = adapter
     }

@@ -6,7 +6,7 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
 object ApiClient {
-    // BASE_URL merupakan URL default untuk mengkoneksikan aplikasi dengan endpoint pada API
+
     const val BASE_URL = "https://api.themoviedb.org/3/"
 
     private val logging: HttpLoggingInterceptor

@@ -13,7 +13,6 @@ class DetailMovieViewModel: ViewModel() {
     private val _detailMovie: MutableLiveData<Result> = MutableLiveData()
     val detailMovie: LiveData<Result> = _detailMovie
 
-
     private var _loading = MutableLiveData<Boolean>()
     val loading: LiveData<Boolean> get() = _loading
 

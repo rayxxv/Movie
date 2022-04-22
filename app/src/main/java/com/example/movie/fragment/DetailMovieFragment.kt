@@ -1,10 +1,10 @@
 package com.example.movie.fragment
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.navArgs
@@ -12,7 +12,6 @@ import com.bumptech.glide.Glide
 import com.example.movie.R
 import com.example.movie.databinding.FragmentDetailMovieBinding
 import com.example.movie.viewmodel.DetailMovieViewModel
-import com.example.movie.viewmodel.DetailSeriesViewModel
 
 
 class DetailMovieFragment : Fragment() {
@@ -33,7 +32,7 @@ class DetailMovieFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 
         super.onViewCreated(view, savedInstanceState)
-        viewModel = ViewModelProvider(this).get(DetailMovieViewModel::class.java)
+        viewModel = ViewModelProvider(this)[DetailMovieViewModel::class.java]
 
         binding.ivBack.setOnClickListener {
             it.findNavController().popBackStack()
@@ -48,7 +47,7 @@ class DetailMovieFragment : Fragment() {
 
         val movieId = args.movieId
 
-        viewModel.detailMovie.observe(viewLifecycleOwner) {
+        viewModel.detailMovie.observe(viewLifecycleOwner) { it ->
 
             Glide.with(binding.ivBackdrop)
                 .load(IMAGE_BASE + it?.backdropPath)
@@ -70,8 +69,8 @@ class DetailMovieFragment : Fragment() {
                         rbRating.rating = (it / 2).toFloat()
                     }
                 }
-                if (it?.releaseDate != null && it?.releaseDate.isNotBlank()){
-                    tvReleaseDate.text = it?.releaseDate
+                if (it?.releaseDate != null && it.releaseDate.isNotBlank()){
+                    tvReleaseDate.text = it.releaseDate
                 }else{
                     tvReleaseDate.visibility = View.GONE
                 }

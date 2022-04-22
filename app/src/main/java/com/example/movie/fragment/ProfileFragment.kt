@@ -1,6 +1,5 @@
 package com.example.movie.fragment
 
-import android.app.AlertDialog
 import android.content.Context
 import android.content.SharedPreferences
 import android.os.Bundle
@@ -10,7 +9,6 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.example.movie.R
@@ -18,33 +16,31 @@ import com.example.movie.databinding.FragmentProfileBinding
 import com.example.movie.room.User
 import com.example.movie.room.UserDatabase
 import com.example.movie.viewmodel.HomeViewModel
-import kotlinx.coroutines.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.async
+import kotlinx.coroutines.runBlocking
 
-class ProfileFragment() : DialogFragment() {
-    lateinit var viewModel: HomeViewModel
+class ProfileFragment : DialogFragment() {
+    private lateinit var viewModel: HomeViewModel
     private var myDB: UserDatabase?= null
     private var _binding: FragmentProfileBinding?= null
     private val binding get() = _binding!!
-    private lateinit var preferences: SharedPreferences
     private val sharedPreferences = "sharedPreferences"
     private val args: ProfileFragmentArgs by navArgs()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         _binding = FragmentProfileBinding.inflate(inflater, container, false)
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
         val profileScreen: SharedPreferences = requireActivity().getSharedPreferences(sharedPreferences, Context.MODE_PRIVATE)
-
-        viewModel = ViewModelProvider(this).get(HomeViewModel::class.java)
-
-
+        viewModel = ViewModelProvider(this)[HomeViewModel::class.java]
 
         myDB = UserDatabase.getInstance(requireContext())
 
@@ -78,25 +74,17 @@ class ProfileFragment() : DialogFragment() {
                 }
             }
         }
+        binding.btnLogout.setOnClickListener {
+            val editor: SharedPreferences.Editor = profileScreen.edit()
+            editor.clear()
+            editor.apply()
+            findNavController().navigate(R.id.action_profileFragment_to_loginFragment)
+        }
 
     }
-    private fun logout() {
-        binding.btnLogout.setOnClickListener {
-            val dialogKonfirmasi = AlertDialog.Builder(requireContext())
-            dialogKonfirmasi.apply {
-                setTitle("Logout")
-                setMessage("Apakah anda yakin ingin log out?")
-                setNegativeButton("Batal") { dialog, which ->
-                    dialog.dismiss()
-                }
-                setPositiveButton("Ya") { dialog, which ->
-                    dialog.dismiss()
 
-                    preferences.edit().clear().apply()
-                    findNavController().navigate(R.id.action_profileFragment_to_loginFragment)
-                }
-            }
-            dialogKonfirmasi.show()
-        }
+    override fun onDestroy() {
+        super.onDestroy()
+        _binding = null
     }
 }
