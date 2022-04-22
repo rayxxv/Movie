@@ -10,9 +10,8 @@ import com.bumptech.glide.Glide
 import com.example.movie.databinding.ItemTvSeriesBinding
 import com.example.movie.fragment.MenuFragmentDirections
 import com.example.movie.model.ResultX
-import com.squareup.picasso.Picasso
 
-class TvAdapter(private val onItemClick: OnClickListener):
+class TvAdapter :
     RecyclerView.Adapter<TvAdapter.ViewHolder>() {
     private val diffCallback = object : DiffUtil.ItemCallback<ResultX>() {
         override fun areItemsTheSame(
@@ -52,16 +51,13 @@ class TvAdapter(private val onItemClick: OnClickListener):
                 tvSeriesTitle.text = data.name
                 tvSeriesRating.text = data.voteAverage.toString()
                 root.setOnClickListener {
-                    val id = MenuFragmentDirections.actionMenuFragmentToDetailSeriesFragment(data.number!!)
+                    val id = MenuFragmentDirections.actionMenuFragmentToDetailSeriesFragment(data.number)
                     it.findNavController().navigate(id)
                 }
             }
         }
     }
 
-    interface OnClickListener {
-        fun onClickItem(data: ResultX)
-    }
 }
 
 

@@ -7,112 +7,80 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.DialogFragment
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 import com.example.movie.R
 import com.example.movie.databinding.FragmentProfileBinding
 import com.example.movie.room.User
 import com.example.movie.room.UserDatabase
+import com.example.movie.viewmodel.HomeViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.runBlocking
 
-class ProfileFragment() : DialogFragment() {
-    private var _binding: FragmentProfileBinding? = null
+class ProfileFragment : DialogFragment() {
+    private lateinit var viewModel: HomeViewModel
+    private var myDB: UserDatabase?= null
+    private var _binding: FragmentProfileBinding?= null
     private val binding get() = _binding!!
-    private lateinit var preferences: SharedPreferences
-    lateinit var itemSelected : User
-    constructor(itemSelected:User):this(){
-        this.itemSelected = itemSelected
-    }
-    var mDb:UserDatabase?=null
+    private val sharedPreferences = "sharedPreferences"
+    private val args: ProfileFragmentArgs by navArgs()
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-
         _binding = FragmentProfileBinding.inflate(inflater, container, false)
         return binding.root
     }
 
-    override fun onResume() {
-        super.onResume()
-
-    }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        mDb = UserDatabase.getInstance(requireContext())
-        preferences = requireContext().getSharedPreferences(LoginFragment.AKUN, Context.MODE_PRIVATE)
+        val profileScreen: SharedPreferences = requireActivity().getSharedPreferences(sharedPreferences, Context.MODE_PRIVATE)
+        viewModel = ViewModelProvider(this)[HomeViewModel::class.java]
 
-        logout()
+        myDB = UserDatabase.getInstance(requireContext())
 
-        if(this::itemSelected.isInitialized){
-            binding.etUsername.setText(itemSelected.username)
-            binding.etEmail.setText(itemSelected.email)
-            binding.etPassword.setText(itemSelected.password)
-        }
+        binding.etUsername.setText(args.user?.username)
+        binding.etEmail.setText(args.user?.email)
+        binding.etPassword.setText(args.user?.password)
 
         binding.btnUpdate.setOnClickListener {
-            when {
-                binding.etEmail.text.isNullOrEmpty() -> {
-                    binding.wrapEmail.error = "Data Belum Terisi"
-                }
-                binding.etUsername.text.isNullOrEmpty() -> {
-                    binding.wrapUsername.error = "Data Belum Terisi"
-                }
-                binding.etPassword.text.isNullOrEmpty() -> {
-                    binding.wrapPassword.error = "Data Belum Terisi"
-                }
 
-                else -> {
-                    val email: String = binding.etEmail.text.toString()
-                    val username: String = binding.etUsername.text.toString()
-                    val password: String = binding.etPassword.text.toString()
-
-                    val objectItem = itemSelected
-                    objectItem.email = email
-                    objectItem.username = username
-                    objectItem.password = password
-
-                    GlobalScope.async {
-                        val result = mDb?.userDao()?.updateItem(objectItem)
-                        runBlocking {
-                            if (result != 0) {
-                                Toast.makeText(
-                                    it.context,
-                                    "Profile ${itemSelected.username} sukses diubah",
-                                    Toast.LENGTH_SHORT
-                                ).show()
-                            } else {
-                                Toast.makeText(it.context, "Harga gagal diubah", Toast.LENGTH_SHORT)
-                                    .show()
-                            }
-                        }
+            val objectUser = User(
+                args.user?.id,
+                binding.etUsername.text.toString(),
+                binding.etEmail.text.toString(),
+                binding.etPassword.text.toString()
+            )
+            GlobalScope.async {
+                val result = myDB?.userDao()?.updateItem(objectUser)
+                runBlocking(Dispatchers.Main) {
+                    if (result != 0) {
+                        viewModel.getDataUser(objectUser)
+                        val editor: SharedPreferences.Editor = profileScreen.edit()
+                        editor.putString("username", binding.etUsername.text.toString())
+                        editor.putString("email", binding.etEmail.text.toString())
+                        editor.putString("password", binding.etPassword.text.toString())
+                        editor.apply()
+                        Toast.makeText(requireContext(), "Sukses mengubah profil user", Toast.LENGTH_SHORT).show()
+                        findNavController().navigate(R.id.action_profileFragment_to_menuFragment2)
+                    } else {
+                        Toast.makeText(requireContext(), "Gagal mengubah profil user", Toast.LENGTH_SHORT).show()
                     }
                 }
             }
         }
-    }
-    private fun logout() {
         binding.btnLogout.setOnClickListener {
-            val dialogKonfirmasi = AlertDialog.Builder(requireContext())
-            dialogKonfirmasi.apply {
-                setTitle("Logout")
-                setMessage("Apakah anda yakin ingin log out?")
-                setNegativeButton("Batal") { dialog, which ->
-                    dialog.dismiss()
-                }
-                setPositiveButton("Ya") { dialog, which ->
-                    dialog.dismiss()
-
-                    preferences.edit().clear().apply()
-                    findNavController().navigate(R.id.action_profileFragment_to_loginFragment)
-                }
-            }
-            dialogKonfirmasi.show()
+            val editor: SharedPreferences.Editor = profileScreen.edit()
+            editor.clear()
+            editor.apply()
+            findNavController().navigate(R.id.action_profileFragment_to_loginFragment)
         }
+
     }
 
     override fun onDestroy() {

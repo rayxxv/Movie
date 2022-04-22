@@ -9,23 +9,21 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
+import com.example.movie.R
 import com.example.movie.databinding.FragmentLoginBinding
 import com.example.movie.room.UserDatabase
-import com.example.movie.R
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
-
 
 
 class LoginFragment : Fragment() {
     private var mDB: UserDatabase?= null
     private var _binding: FragmentLoginBinding?= null
     private val binding get() = _binding!!
+    private val sharedPreferences = "sharedPreferences"
 
     companion object{
-        const val AKUN = "user_login"
         const val USERNAME = "username"
-        const val PASSWORD = "password"
     }
 
     override fun onCreateView(
@@ -41,9 +39,8 @@ class LoginFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         mDB = UserDatabase.getInstance(requireContext())
 
-        val loginscreen: SharedPreferences = requireActivity().getSharedPreferences(AKUN, Context.MODE_PRIVATE)
-        if (loginscreen!!.getString(USERNAME,null)!=null){
-
+        val loginscreen: SharedPreferences = requireActivity().getSharedPreferences(sharedPreferences, Context.MODE_PRIVATE)
+        if (loginscreen.getString(USERNAME,null)!=null){
             findNavController().navigate(R.id.action_loginFragment_to_menuFragment)
             val username = loginscreen.getString(USERNAME,null)
             Toast.makeText(context, "Selamat datang $username", Toast.LENGTH_SHORT).show()
@@ -61,6 +58,7 @@ class LoginFragment : Fragment() {
                         val sharpref: SharedPreferences.Editor = loginscreen.edit()
                         sharpref.putString("username", binding.etUsername.text.toString())
                         sharpref.apply()
+                        Toast.makeText(context, "Sign In Berhasil", Toast.LENGTH_SHORT).show()
                         findNavController().navigate(R.id.action_loginFragment_to_menuFragment)
                     } else {
                         Toast.makeText(context, "Tidak Berhasil Login", Toast.LENGTH_SHORT).show()
