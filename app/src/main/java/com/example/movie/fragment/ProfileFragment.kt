@@ -48,32 +48,32 @@ class ProfileFragment : DialogFragment() {
         binding.etEmail.setText(args.user?.email)
         binding.etPassword.setText(args.user?.password)
 
-        binding.btnUpdate.setOnClickListener {
-
-            val objectUser = User(
-                args.user?.id,
-                binding.etUsername.text.toString(),
-                binding.etEmail.text.toString(),
-                binding.etPassword.text.toString()
-            )
-            GlobalScope.async {
-                val result = myDB?.userDao()?.updateItem(objectUser)
-                runBlocking(Dispatchers.Main) {
-                    if (result != 0) {
-                        viewModel.getDataUser(objectUser)
-                        val editor: SharedPreferences.Editor = profileScreen.edit()
-                        editor.putString("username", binding.etUsername.text.toString())
-                        editor.putString("email", binding.etEmail.text.toString())
-                        editor.putString("password", binding.etPassword.text.toString())
-                        editor.apply()
-                        Toast.makeText(requireContext(), "Sukses mengubah profil user", Toast.LENGTH_SHORT).show()
-                        findNavController().navigate(R.id.action_profileFragment_to_menuFragment2)
-                    } else {
-                        Toast.makeText(requireContext(), "Gagal mengubah profil user", Toast.LENGTH_SHORT).show()
-                    }
-                }
-            }
-        }
+//        binding.btnUpdate.setOnClickListener {
+//
+//            val objectUser = User(
+//                args.user?.id,
+//                binding.etUsername.text.toString(),
+//                binding.etEmail.text.toString(),
+//                binding.etPassword.text.toString()
+//            )
+//            GlobalScope.async {
+//                val result = myDB?.userDao()?.updateItem(objectUser)
+//                runBlocking(Dispatchers.Main) {
+//                    if (result != 0) {
+//                        viewModel.getDataUser(objectUser)
+//                        val editor: SharedPreferences.Editor = profileScreen.edit()
+//                        editor.putString("username", binding.etUsername.text.toString())
+//                        editor.putString("email", binding.etEmail.text.toString())
+//                        editor.putString("password", binding.etPassword.text.toString())
+//                        editor.apply()
+//                        Toast.makeText(requireContext(), "Sukses mengubah profil user", Toast.LENGTH_SHORT).show()
+//                        findNavController().navigate(R.id.action_profileFragment_to_menuFragment2)
+//                    } else {
+//                        Toast.makeText(requireContext(), "Gagal mengubah profil user", Toast.LENGTH_SHORT).show()
+//                    }
+//                }
+//            }
+//        }
         binding.btnLogout.setOnClickListener {
             val editor: SharedPreferences.Editor = profileScreen.edit()
             editor.clear()

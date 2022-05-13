@@ -1,15 +1,19 @@
 package com.example.movie.viewmodel
 
-import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.asLiveData
+import com.example.movie.datastore.DataStoreManager
 import com.example.movie.room.User
 
-class HomeViewModel: ViewModel() {
+class HomeViewModel(private val pref: DataStoreManager) : ViewModel() {
 
-    val user: MutableLiveData<User> = MutableLiveData()
+    suspend fun setDataUser(user: User){
+        pref.setUser(user)
+    }
 
-    fun getDataUser(data: User) {
-        user.postValue(data)
+    fun getDataUser(): LiveData<User>{
+        return pref.getUser().asLiveData()
     }
 
 }

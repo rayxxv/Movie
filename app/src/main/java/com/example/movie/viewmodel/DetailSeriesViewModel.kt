@@ -3,13 +3,14 @@ package com.example.movie.viewmodel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.example.movie.datastore.DataStoreManager
 import com.example.movie.model.ResultX
 import com.example.movie.service.ApiClient
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-class DetailSeriesViewModel: ViewModel() {
+class DetailSeriesViewModel(pref: DataStoreManager) : ViewModel() {
     private val _detailSeries: MutableLiveData<ResultX> = MutableLiveData()
     val detailSeries: LiveData<ResultX> = _detailSeries
 

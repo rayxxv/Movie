@@ -15,6 +15,7 @@ import com.example.movie.R
 import com.example.movie.adapter.PopularAdapter
 import com.example.movie.adapter.TvAdapter
 import com.example.movie.databinding.FragmentMenuBinding
+import com.example.movie.datastore.DataStoreManager
 import com.example.movie.model.Popular
 import com.example.movie.model.Result
 import com.example.movie.model.ResultX
@@ -23,6 +24,7 @@ import com.example.movie.room.User
 import com.example.movie.room.UserDatabase
 import com.example.movie.service.ApiClient
 import com.example.movie.viewmodel.HomeViewModel
+import com.example.movie.viewmodel.ViewModelFactory
 import kotlinx.coroutines.*
 import retrofit2.Call
 import retrofit2.Callback
@@ -34,7 +36,8 @@ class MenuFragment : Fragment() {
     private val binding get() = _binding!!
     private lateinit var preferences: SharedPreferences
     private var myDB: UserDatabase?= null
-    private lateinit var viewModel: HomeViewModel
+    private lateinit var homeViewModel: HomeViewModel
+    private lateinit var pref: DataStoreManager
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -44,13 +47,10 @@ class MenuFragment : Fragment() {
         return binding.root
     }
 
-
-    @SuppressLint("SetTextI18n")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        preferences = requireActivity().getSharedPreferences("sharedPreferences", Context.MODE_PRIVATE)
-        viewModel = ViewModelProvider(this).get(HomeViewModel::class.java)
-
+        pref = DataStoreManager(requireActivity())
+        homeViewModel = ViewModelProvider(requireActivity(), ViewModelFactory(pref))[HomeViewModel::class.java]
         getUser()
         fetchAllDataMovie()
         fetchAllDataSeries()
@@ -58,7 +58,7 @@ class MenuFragment : Fragment() {
         binding.btnProfile.setOnClickListener{
             findNavController().navigate(R.id.action_menuFragment_to_profileFragment)
         }
-        viewModel.user.observe(viewLifecycleOwner) {
+        homeViewModel.getDataUser().observe(viewLifecycleOwner) {
             binding.tvJudul.text = "Hallo ${it.username}"
         }
     }
@@ -72,10 +72,9 @@ class MenuFragment : Fragment() {
             val user = myDB?.userDao()?.getUser(username.toString())
             runBlocking(Dispatchers.Main) {
                 if (user != null) {
-                    val data = User(user.id, user.username, user.email, user.password)
-                    viewModel.getDataUser(data)
+                    homeViewModel.getDataUser()
                     binding.btnProfile.setOnClickListener {
-                        val direct = MenuFragmentDirections.actionMenuFragmentToProfileFragment(data)
+                        val direct = MenuFragmentDirections.actionMenuFragmentToProfileFragment()
                         findNavController().navigate(direct)
                     }
                 }
