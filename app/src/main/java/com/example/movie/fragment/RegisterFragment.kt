@@ -1,5 +1,7 @@
 package com.example.movie.fragment
 
+import android.content.ContentResolver
+import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -11,11 +13,12 @@ import com.example.movie.R
 import com.example.movie.databinding.FragmentRegisterBinding
 import com.example.movie.room.User
 import com.example.movie.room.UserDatabase
+import com.example.movie.room.UserRepository
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
 
 class RegisterFragment : Fragment() {
-    private var mDB: UserDatabase?=null
+    private lateinit var repository: UserRepository
     private var _binding: FragmentRegisterBinding? = null
     private val binding get() = _binding!!
 
@@ -32,9 +35,20 @@ class RegisterFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        mDB = UserDatabase.getInstance(requireContext())
+        repository = UserRepository(requireContext())
 
         binding.btnDaftar.setOnClickListener {
+            val imageUri: Uri = Uri.parse(
+                ContentResolver.SCHEME_ANDROID_RESOURCE +
+                        "://" + resources.getResourcePackageName(R.drawable.default_profile)
+                        + '/' + resources.getResourceTypeName(R.drawable.default_profile) + '/'
+                        + resources.getResourceEntryName(R.drawable.default_profile)
+            )
+            val username = binding.etUsername.text
+            val email = binding.etEmail.text
+            val password = binding.etPassword.text
+            val konfirmasiPassword = binding.etConfirmPassword.text
+
             when {
                 binding.etUsername.text.isNullOrEmpty() || binding.etEmail.text.isNullOrEmpty() || binding.etPassword.text.isNullOrEmpty() || binding.etConfirmPassword.text.isNullOrEmpty() ->{
                     Toast.makeText(activity, "Terdapat Data Yang Belum Terisi", Toast.LENGTH_SHORT).show()
@@ -44,13 +58,9 @@ class RegisterFragment : Fragment() {
                 }
                 else -> {
                     val user = User(
-                        null,
-                        binding.etUsername.text.toString(),
-                        binding.etEmail.text.toString(),
-                        binding.etPassword.text.toString()
-                    )
+                        null, username.toString(), email.toString(), password.toString(), imageUri.toString())
                     GlobalScope.async {
-                        val result =mDB?.userDao()?.addUser(user)
+                        val result =repository.addUser(user)
                         activity?.runOnUiThread {
                             if (result != 0.toLong()){
                                 Toast.makeText(activity, "Pendaftaran akun anda berhasil", Toast.LENGTH_SHORT).show()

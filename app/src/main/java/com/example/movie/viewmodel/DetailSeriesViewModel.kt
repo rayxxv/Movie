@@ -10,7 +10,7 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-class DetailSeriesViewModel(pref: DataStoreManager) : ViewModel() {
+class DetailSeriesViewModel : ViewModel() {
     private val _detailSeries: MutableLiveData<ResultX> = MutableLiveData()
     val detailSeries: LiveData<ResultX> = _detailSeries
 

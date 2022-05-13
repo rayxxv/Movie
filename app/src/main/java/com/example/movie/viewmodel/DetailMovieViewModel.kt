@@ -10,7 +10,7 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-class DetailMovieViewModel(pref: DataStoreManager) : ViewModel() {
+class DetailMovieViewModel : ViewModel() {
     private val _detailMovie: MutableLiveData<Result> = MutableLiveData()
     val detailMovie: LiveData<Result> = _detailMovie
 
