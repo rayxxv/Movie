@@ -57,7 +57,7 @@ class MenuFragment : Fragment() {
             findNavController().navigate(R.id.action_menuFragment_to_profileFragment)
         }
         homeViewModel.getDataStore().observe(viewLifecycleOwner) {
-            binding!!.tvJudul.text = it
+            binding?.tvJudul.text = it
         }
         getUser()
         fetchAllDataMovie()
